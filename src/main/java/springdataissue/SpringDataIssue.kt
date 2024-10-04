@@ -12,20 +12,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
 
-// Schema:
-//
-// CREATE TABLE IF NOT EXISTS parent_entity
-// (
-//     id                 UUID NOT NULL DEFAULT random_uuid() PRIMARY KEY
-// );
-//
-// CREATE TABLE IF NOT EXISTS child_entity
-// (
-//     id                 UUID NOT NULL DEFAULT random_uuid() PRIMARY KEY,
-//     parent_entity      UUID NOT NULL REFERENCES parent_entity (id) ON DELETE CASCADE,
-//     parent_entity_key  INT  NOT NULL
-// );
-
 @Table
 data class ParentEntity(
   @MappedCollection val children: List<ChildEntity>,
@@ -60,9 +46,3 @@ class Startup(private val entityRepository: EntityRepository) {
 fun main(args: Array<String>) {
   runApplication<SpringDataIssue>(*args)
 }
-
-// Result:
-//   After initial save:            ParentEntity(children=[ChildEntity(id=542938e4-1941-40bb-852b-6b11052c5a3b)], id=c93a8ba8-0c54-4979-af25-d08f422803d7)
-//   Updated in memory:             ParentEntity(children=[ChildEntity(id=542938e4-1941-40bb-852b-6b11052c5a3b), ChildEntity(id=null)], id=c93a8ba8-0c54-4979-af25-d08f422803d7)
-//   After saving updated entity:   ParentEntity(children=[ChildEntity(id=a9686057-a17d-4626-b649-ab512155bfd3)], id=c93a8ba8-0c54-4979-af25-d08f422803d7)
-//   Updated entity loaded from DB: ParentEntity(children=[ChildEntity(id=542938e4-1941-40bb-852b-6b11052c5a3b), ChildEntity(id=a9686057-a17d-4626-b649-ab512155bfd3)], id=c93a8ba8-0c54-4979-af25-d08f422803d7)
